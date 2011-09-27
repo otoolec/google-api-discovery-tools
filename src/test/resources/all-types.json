@@ -1,0 +1,80 @@
+{
+ "schemas": {
+  "ObjectWithAllTypes": {
+   "id": "ObjectWithAllTypes",
+   "type": "object",
+   "properties": {
+    "enumType": {
+     "type": "string",
+     "enum": [
+      "VALUE1",
+      "VALUE2"
+     ],
+     "enumDescriptions": [
+      "Value 1.",
+      "Value 2."
+     ],
+     "default": "VALUE2"
+    },
+    "stringType": {
+     "type": "string",
+     "pattern": "[0-9]+",
+     "format": "uint32"
+    },
+    "intType": {
+     "type": "integer",
+     "minimum": "10",
+     "maximum": "20",
+     "default": "15",
+     "format": "int64"
+    },
+    "plainIntType": {
+     "type": "integer"
+    },
+    "numType": {
+     "type": "number",
+     "minimum": "10.0",
+     "maximum": "20.0",
+     "default": "3.1415",
+     "format": "double"
+    },
+    "plainNumType": {
+     "type": "number"
+    },
+    "objType": {
+     "type": "object",
+     "properties": {
+      "prop1": {
+        "type": "string"
+      },
+      "prop2": {
+       "type": "integer"
+      }
+     }
+    },
+    "mapType": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "arrayType": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     }
+    },
+    "boolType": {
+     "type": "boolean",
+     "default": "false"
+    },
+    "nullType": {
+     "type": "null"
+    },
+    "anyType": {
+     "type": "any"
+    }
+   }
+  }
+ }
+}

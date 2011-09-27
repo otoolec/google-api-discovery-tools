@@ -1,0 +1,59 @@
+{
+ "kind": "discovery#directoryList",
+ "items": [
+  {
+   "kind": "discovery#directoryItem",
+   "id": "adexchangebuyer:v1",
+   "name": "adexchangebuyer",
+   "version": "v1",
+   "title": "Ad Exchange Buyer API",
+   "description": "Lets you manage your Ad Exchange Buyer account",
+   "discoveryLink": "./apis/adexchangebuyer/v1/rest",
+   "icons": {
+    "x16": "http://www.google.com/images/icons/product/doubleclick-16.png",
+    "x32": "http://www.google.com/images/icons/product/doubleclick-32.png"
+   },
+   "documentationLink": "http://code.google.com/apis/adexchangebuyer/docs",
+   "labels": [
+    "labs"
+   ],
+   "preferred": true
+  },
+  {
+   "kind": "discovery#directoryItem",
+   "id": "analytics:v2.4",
+   "name": "analytics",
+   "version": "v2.4",
+   "title": "Google Analytics API",
+   "description": "View and manage your Google Analytics data",
+   "discoveryLink": "./apis/analytics/v2.4/rest",
+   "icons": {
+    "x16": "http://www.google.com/images/icons/product/analytics-16.png",
+    "x32": "http://www.google.com/images/icons/product/analytics-32.png"
+   },
+   "documentationLink": "http://code.google.com/apis/analytics",
+   "labels": [
+    "labs"
+   ],
+   "preferred": false
+  },
+  {
+   "kind": "discovery#directoryItem",
+   "id": "analytics:v3",
+   "name": "analytics",
+   "version": "v3",
+   "title": "Google Analytics API",
+   "description": "View and manage your Google Analytics data",
+   "discoveryLink": "./apis/analytics/v3/rest",
+   "icons": {
+    "x16": "http://www.google.com/images/icons/product/analytics-16.png",
+    "x32": "http://www.google.com/images/icons/product/analytics-32.png"
+   },
+   "documentationLink": "http://code.google.com/apis/analytics",
+   "labels": [
+    "labs"
+   ],
+   "preferred": true
+  }
+ ]
+}
