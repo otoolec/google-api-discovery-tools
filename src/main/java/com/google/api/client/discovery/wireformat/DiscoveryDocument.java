@@ -23,11 +23,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class which we can deserialize our Discovery response.
+ * Class which we can deserialize our Discovery response. This is for use in
+ * deserializing Discovery documents, and should not be used by end users.
  *
+ * @see com.google.api.client.discovery.Discovery
  * @author moshenko@google.com (Jacob Moshenko)
  */
-public class DiscoveryDocument {
+public class DiscoveryDocument extends AbstractDiscoveryItem {
 
   public static final class Schema {
     @SerializedName("$ref")
@@ -286,24 +288,6 @@ public class DiscoveryDocument {
     }
   }
 
-  public static final class Resource {
-    private Map<String, Method> methods;
-
-    public Resource() {
-    }
-
-    Resource(Map<String, Method> methods) {
-      this.methods = methods;
-    }
-
-    /**
-     * Returns the methods
-     */
-    public Map<String, Method> getMethods() {
-      return methods == null ? null : Collections.unmodifiableMap(methods);
-    }
-  }
-
   public static final class OAuth2Scope {
     private final String description;
 
@@ -363,19 +347,11 @@ public class DiscoveryDocument {
   }
 
   private final Auth auth;
-  private final String description;
-  private final String documentationLink;
   private final List<String> features;
-  private final Map<String, String> icons;
-  private final String id;
-  private final List<String> labels;
   private final Map<String, Method> methods;
-  private final String name;
   private final Map<String, Schema> parameters;
   private final String rpcPath;
   private final Map<String, Schema> schemas;
-  private final String title;
-  private final String version;
 
   /**
    * This constructor is for use by Gson only.
@@ -398,62 +374,13 @@ public class DiscoveryDocument {
       Map<String, String> icons,
       List<String> features,
       List<String> labels) {
-    this.name = name;
-    this.version = version;
-    this.id = id;
-    this.title = title;
-    this.description = description;
+    super(id, labels, name, version, description, documentationLink, icons, title);
     this.schemas = schemas;
     this.methods = methods;
     this.auth = auth;
     this.parameters = parameters;
-    this.documentationLink = documentationLink;
     this.rpcPath = rpcPath;
-    this.labels = labels;
     this.features = features;
-    this.icons = icons;
-  }
-
-  /**
-   * Returns the name
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Returns the title
-   */
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * Returns the version
-   */
-  public String getVersion() {
-    return version;
-  }
-
-  /**
-   * Returns the unique id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * Returns the description
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  /**
-   * Returns the link at which documentation can be found.
-   */
-  public String getDocumentationLink() {
-    return documentationLink;
   }
 
   /**
@@ -496,20 +423,5 @@ public class DiscoveryDocument {
    */
   public List<String> getFeatures() {
     return features == null ? null : Collections.unmodifiableList(features);
-  }
-
-  /**
-   * Returns a list of labels for the status of this API, such as labs or
-   * deprecated.
-   */
-  public List<String> getLabels() {
-    return labels == null ? null : Collections.unmodifiableList(labels);
-  }
-
-  /**
-   * Returns a map which maps icon size to a URL for that size icon.
-   */
-  public Map<String, String> getIcons() {
-    return icons == null ? null : Collections.unmodifiableMap(icons);
   }
 }

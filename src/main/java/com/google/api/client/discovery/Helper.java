@@ -28,6 +28,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -52,13 +54,40 @@ public class Helper {
    */
   public static Discovery getDiscovery(String apiName, String apiVersion)
       throws JsonSyntaxException, JsonIOException, IOException {
+    return getDiscovery(apiName, apiVersion, BASE_DISCOVERY_URL);
+  }
+
+  /**
+   * Fetch and deserialize the Discovery document for the given API.
+   *
+   * @param apiName Name of the API to fetch.
+   * @param apiVersion Version of the API to fetch.
+   * @param discoveryUrl Base url from which to fetch the discovery document.
+   * @return Discovery document.
+   */
+  public static Discovery getDiscovery(String apiName, String apiVersion, String discoveryUrl)
+      throws JsonSyntaxException, JsonIOException, IOException {
     Preconditions.checkNotNull(apiName);
     Preconditions.checkNotNull(apiVersion);
     String urlString =
-        Joiner.on('/').join(ImmutableList.of(BASE_DISCOVERY_URL, apiName, apiVersion, "rpc"));
+        Joiner.on('/').join(ImmutableList.of(discoveryUrl, apiName, apiVersion, "rpc"));
     URL url = new URL(urlString);
     DiscoveryDocument wire =
         gson.fromJson(new InputStreamReader(url.openStream()), DiscoveryDocument.class);
+    return new Discovery(wire);
+  }
+
+  /**
+   * Load and parse the discovery file from disk.
+   *
+   * @param discoveryFile File instance to parse.
+   * @return Discovery document.
+   * @throws IOException
+   */
+  public static Discovery getDiscoveryFromFile(File discoveryFile)
+      throws JsonSyntaxException, JsonIOException, IOException {
+    Preconditions.checkNotNull(discoveryFile);
+    DiscoveryDocument wire = gson.fromJson(new FileReader(discoveryFile), DiscoveryDocument.class);
     return new Discovery(wire);
   }
 
@@ -68,7 +97,17 @@ public class Helper {
    * @return The Directory document.
    */
   public static DirectoryDocument getDirectoryDocument() throws IOException {
-    URL url = new URL(BASE_DISCOVERY_URL);
+    return getDirectoryDocument(BASE_DISCOVERY_URL);
+  }
+
+  /**
+   * Fetch the Directory document.
+   *
+   * @param discoveryUrl Url from which to fetch the directory document.
+   * @return The Directory document.
+   */
+  public static DirectoryDocument getDirectoryDocument(String discoveryUrl) throws IOException {
+    URL url = new URL(discoveryUrl);
     return gson.fromJson(new InputStreamReader(url.openStream()), DirectoryDocument.class);
   }
 
@@ -80,7 +119,19 @@ public class Helper {
    *         exception occurred.
    */
   public static List<Discovery> getApisFromDirectory() throws IOException {
-    DirectoryDocument wire = getDirectoryDocument();
+    return getApisFromDirectory(BASE_DISCOVERY_URL);
+  }
+
+  /**
+   * Fetch a list of Discovery objects based on the items available in
+   * directory.
+   *
+   * @param discoveryUrl Url from which to fetch the directory document.
+   * @return List of the Directory document or null place-holders when an
+   *         exception occurred.
+   */
+  public static List<Discovery> getApisFromDirectory(String discoveryUrl) throws IOException {
+    DirectoryDocument wire = getDirectoryDocument(discoveryUrl);
     return Lists.transform(wire.getItems(), new Function<DirectoryItem, Discovery>() {
       public Discovery apply(DirectoryItem api) {
         try {

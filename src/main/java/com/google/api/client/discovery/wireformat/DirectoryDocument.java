@@ -30,20 +30,9 @@ public class DirectoryDocument {
   /**
    * Representation of a single service as it will be deserialized.
    */
-  public class DirectoryItem {
-    private final String id;
-    private final List<String> labels;
-    private final String name;
-    private final String version;
-    private final String description;
-    private final String documentationLink;
-    private final Map<String, String> icons;
+  public static class DirectoryItem extends AbstractDiscoveryItem {
     private final Boolean preferred;
-    private final String title;
 
-    /**
-     * This constructor for use by GSON only.
-     */
     public DirectoryItem() {
       this(null, null, null, null, null, null, null, null, null);
     }
@@ -57,65 +46,8 @@ public class DirectoryDocument {
         Map<String, String> icons,
         Boolean preferred,
         String title) {
-      super();
-      this.id = id;
-      this.labels = labels;
-      this.name = name;
-      this.version = version;
-      this.description = description;
-      this.documentationLink = documentationLink;
-      this.icons = icons;
+      super(id, labels, name, version, description, documentationLink, icons, title);
       this.preferred = preferred;
-      this.title = title;
-    }
-
-    /**
-     * Returns the id for this service in the format apiname:version
-     */
-    public String getId() {
-      return id;
-    }
-
-    /**
-     * Returns a list of labels associated with this service. E.g. "labs"
-     */
-    public List<String> getLabels() {
-      return labels;
-    }
-
-    /**
-     * Return the name identifier of this API.
-     */
-    public String getName() {
-      return name;
-    }
-
-    /**
-     * Return the version identifier of this API.
-     */
-    public String getVersion() {
-      return version;
-    }
-
-    /**
-     * Returns the description.
-     */
-    public String getDescription() {
-      return description;
-    }
-
-    /**
-     * Returns a map which maps icon size to a URL for that size icon.
-     */
-    public Map<String, String> getIcons() {
-      return Collections.unmodifiableMap(icons);
-    }
-
-    /**
-     * Returns the link at which documentation can be found.
-     */
-    public String getDocumentationLink() {
-      return documentationLink;
     }
 
     /**
@@ -123,13 +55,6 @@ public class DirectoryDocument {
      */
     public Boolean getPreferred() {
       return preferred;
-    }
-
-    /**
-     * Returns the title of this API.
-     */
-    public String getTitle() {
-      return title;
     }
   }
 
