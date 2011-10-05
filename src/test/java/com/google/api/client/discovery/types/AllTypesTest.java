@@ -75,7 +75,7 @@ public class AllTypesTest extends TestCase {
 
     StringType typed = unknown.getString();
     assertEquals("[0-9]+", typed.getPattern());
-    assertEquals("uint32", typed.getFormat());
+    assertEquals(StringType.Format.DATE_TIME, typed.getFormat());
     assertEquals(false, typed.isEnum());
   }
 
@@ -87,7 +87,7 @@ public class AllTypesTest extends TestCase {
     assertEquals(new Integer(10), typed.getMinimum());
     assertEquals(new Integer(20), typed.getMaximum());
     assertEquals(new Integer(15), typed.getDefault());
-    assertEquals("int64", typed.getFormat());
+    assertEquals(IntegerType.Format.INT32, typed.getFormat());
   }
 
   public void testPlainInteger() {
@@ -109,7 +109,7 @@ public class AllTypesTest extends TestCase {
     assertEquals(new Double(10.0), typed.getMinimum());
     assertEquals(new Double(20.0), typed.getMaximum());
     assertEquals(new Double(3.1415), typed.getDefault());
-    assertEquals("double", typed.getFormat());
+    assertEquals(NumberType.Format.DOUBLE, typed.getFormat());
   }
 
   public void testPlainNumber() {
@@ -160,7 +160,6 @@ public class AllTypesTest extends TestCase {
 
     BooleanType typed = unknown.getBoolean();
     assertEquals(Boolean.FALSE, typed.getDefault());
-    assertEquals(null, typed.getFormat());
   }
 
   public void testNull() {

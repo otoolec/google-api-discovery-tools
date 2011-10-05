@@ -19,14 +19,14 @@
     "stringType": {
      "type": "string",
      "pattern": "[0-9]+",
-     "format": "uint32"
+     "format": "date-time"
     },
     "intType": {
      "type": "integer",
      "minimum": "10",
      "maximum": "20",
      "default": "15",
-     "format": "int64"
+     "format": "int32"
     },
     "plainIntType": {
      "type": "integer"

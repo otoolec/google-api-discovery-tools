@@ -109,7 +109,7 @@ public class Method {
 
   /**
    * Returns type descriptions for each of the parameters that are named but not
-   * listed as required.
+   * listed as required. There is no guaranteed ordering of these parameters.
    */
   public Collection<Parameter> getOptionalParameters() {
     Set<String> required = Sets.newHashSet(methodNode.getParameterOrder());

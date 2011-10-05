@@ -21,7 +21,7 @@ package com.google.api.client.discovery.types;
  *
  * @author moshenko@google.com (Jake Moshenko)
  */
-public class BooleanType extends PrimitiveType {
+public class BooleanType extends DiscoveryType {
 
   @Override
   public BooleanType getBoolean() {
