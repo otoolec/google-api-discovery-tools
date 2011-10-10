@@ -96,7 +96,7 @@ public class IntegerType extends DiscoveryType {
    * Returns the default value.
    */
   public Integer getDefault() {
-    String def = schemaNode.getDefault();
+    String def = schemaNode.getDiscoveryDefault();
     return def == null ? null : Integer.parseInt(def);
   }
 

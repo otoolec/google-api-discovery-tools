@@ -16,7 +16,7 @@
 
 package com.google.api.client.discovery.types;
 
-import com.google.api.client.discovery.wireformat.DiscoveryDocument.Schema;
+import com.google.api.services.discovery.model.Jsonschema;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
@@ -69,10 +69,10 @@ public abstract class DiscoveryType {
   }
 
   /** All named top level schemas from the discovery document. */
-  protected Map<String, Schema> topLevelSchemas;
+  protected Map<String, Jsonschema> topLevelSchemas;
 
   /** The schema node being wrapped by this type. */
-  protected Schema schemaNode;
+  protected Jsonschema schemaNode;
 
   /** Lower level type. */
   protected BaseType type;
@@ -81,9 +81,9 @@ public abstract class DiscoveryType {
    * Reusable function to convert a schema node to the corresponding wrapped
    * {@link DiscoveryType}.
    */
-  protected Function<Schema, DiscoveryType> schemaToDisicoveryType =
-      new Function<Schema, DiscoveryType>() {
-        public DiscoveryType apply(Schema input) {
+  protected Function<Jsonschema, DiscoveryType> schemaToDisicoveryType =
+      new Function<Jsonschema, DiscoveryType>() {
+        public DiscoveryType apply(Jsonschema input) {
           return createTypeFromSchemaNode(input, topLevelSchemas);
         }
       };
@@ -96,13 +96,13 @@ public abstract class DiscoveryType {
    * @return The corresponding wrapped representation.
    */
   public static DiscoveryType createTypeFromSchemaNode(
-      Schema node, Map<String, Schema> topLevelSchemas) {
+      Jsonschema node, Map<String, Jsonschema> topLevelSchemas) {
 
     if (node == null) {
       return null;
     }
 
-    Schema realSchema = dereferenceSchema(node, topLevelSchemas);
+    Jsonschema realSchema = dereferenceSchema(node, topLevelSchemas);
     BaseType type = BaseType.getTypeForJsonType(realSchema.getType());
 
     DiscoveryType newTypeWrapper;
@@ -142,10 +142,10 @@ public abstract class DiscoveryType {
     return newTypeWrapper;
   }
 
-  private static Schema dereferenceSchema(
-      Schema possiblyAReference, Map<String, Schema> topLevelSchemas) {
-    if (possiblyAReference.getRef() != null) {
-      return dereferenceSchema(topLevelSchemas.get(possiblyAReference.getRef()), topLevelSchemas);
+  private static Jsonschema dereferenceSchema(
+      Jsonschema possiblyAReference, Map<String, Jsonschema> topLevelSchemas) {
+    if (possiblyAReference.get$ref() != null) {
+      return dereferenceSchema(topLevelSchemas.get(possiblyAReference.get$ref()), topLevelSchemas);
     }
     return possiblyAReference;
   }

@@ -1,5 +1,5 @@
 {
- "kind": "discovery#rpcDescription",
+ "kind": "discovery#restDescription",
  "id": "urlshortener:v1",
  "name": "urlshortener",
  "version": "v1",
@@ -13,8 +13,8 @@
  "labels": [
   "labs"
  ],
- "protocol": "rpc",
- "rpcPath": "/rpc",
+ "protocol": "rest",
+ "basePath": "/urlshortener/v1/",
  "parameters": {
   "alt": {
    "type": "string",
@@ -47,6 +47,11 @@
    "type": "boolean",
    "description": "Returns response with indentations and line breaks.",
    "default": "true",
+   "location": "query"
+  },
+  "quotaUser": {
+   "type": "string",
+   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
    "location": "query"
   },
   "userIp": {
@@ -214,85 +219,92 @@
    }
   }
  },
- "methods": {
-  "urlshortener.url.get": {
-   "id": "urlshortener.url.get",
-   "description": "Expands a short URL or gets creation time and analytics.",
-   "allowGet": true,
-   "parameters": {
-    "projection": {
-     "type": "string",
-     "description": "Additional information to return.",
-     "enum": [
-      "ANALYTICS_CLICKS",
-      "ANALYTICS_TOP_STRINGS",
-      "FULL"
+ "resources": {
+  "url": {
+   "methods": {
+    "get": {
+     "id": "urlshortener.url.get",
+     "path": "url",
+     "httpMethod": "GET",
+     "description": "Expands a short URL or gets creation time and analytics.",
+     "parameters": {
+      "projection": {
+       "type": "string",
+       "description": "Additional information to return.",
+       "enum": [
+        "ANALYTICS_CLICKS",
+        "ANALYTICS_TOP_STRINGS",
+        "FULL"
+       ],
+       "enumDescriptions": [
+        "Returns only click counts.",
+        "Returns only top string counts.",
+        "Returns the creation timestamp and all available analytics."
+       ],
+       "location": "query"
+      },
+      "shortUrl": {
+       "type": "string",
+       "description": "The short URL, including the protocol.",
+       "required": true,
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "shortUrl"
      ],
-     "enumDescriptions": [
-      "Returns only click counts.",
-      "Returns only top string counts.",
-      "Returns the creation timestamp and all available analytics."
+     "response": {
+      "$ref": "Url"
+     }
+    },
+    "insert": {
+     "id": "urlshortener.url.insert",
+     "path": "url",
+     "httpMethod": "POST",
+     "description": "Creates a new short URL.",
+     "request": {
+      "$ref": "Url"
+     },
+     "response": {
+      "$ref": "Url"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/urlshortener"
      ]
     },
-    "shortUrl": {
-     "type": "string",
-     "description": "The short URL, including the protocol.",
-     "required": true
+    "list": {
+     "id": "urlshortener.url.list",
+     "path": "url/history",
+     "httpMethod": "GET",
+     "description": "Retrieves a list of URLs shortened by a user.",
+     "parameters": {
+      "projection": {
+       "type": "string",
+       "description": "Additional information to return.",
+       "enum": [
+        "ANALYTICS_CLICKS",
+        "FULL"
+       ],
+       "enumDescriptions": [
+        "Returns short URL click counts.",
+        "Returns short URL click counts."
+       ],
+       "location": "query"
+      },
+      "start-token": {
+       "type": "string",
+       "description": "Token for requesting successive pages of results.",
+       "location": "query"
+      }
+     },
+     "response": {
+      "$ref": "UrlHistory"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/urlshortener"
+     ]
     }
-   },
-   "parameterOrder": [
-    "shortUrl"
-   ],
-   "returns": {
-    "$ref": "Url"
    }
-  },
-  "urlshortener.url.insert": {
-   "id": "urlshortener.url.insert",
-   "description": "Creates a new short URL.",
-   "parameters": {
-    "resource": {
-     "$ref": "Url"
-    }
-   },
-   "parameterOrder": [
-    "resource"
-   ],
-   "returns": {
-    "$ref": "Url"
-   },
-   "scopes": [
-    "https://www.googleapis.com/auth/urlshortener"
-   ]
-  },
-  "urlshortener.url.list": {
-   "id": "urlshortener.url.list",
-   "description": "Retrieves a list of URLs shortened by a user.",
-   "allowGet": true,
-   "parameters": {
-    "projection": {
-     "type": "string",
-     "description": "Additional information to return.",
-     "enum": [
-      "ANALYTICS_CLICKS",
-      "FULL"
-     ],
-     "enumDescriptions": [
-      "Returns short URL click counts.",
-      "Returns short URL click counts."
-     ]
-    },
-    "start-token": {
-     "type": "string",
-     "description": "Token for requesting successive pages of results."
-    }
-   },
-   "returns": {
-    "$ref": "UrlHistory"
-   },
-   "scopes": [
-    "https://www.googleapis.com/auth/urlshortener"
-   ]
   }
  }
 }

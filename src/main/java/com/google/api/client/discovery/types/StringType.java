@@ -104,7 +104,7 @@ public class StringType extends DiscoveryType {
    * enumeration.
    */
   public List<String> getEnumValues() {
-    return schemaNode.getEnumValues();
+    return schemaNode.getDiscoveryEnum();
   }
 
   /**
@@ -118,14 +118,14 @@ public class StringType extends DiscoveryType {
    * Returns whether or not this field is an enumeration.
    */
   public boolean isEnum() {
-    return schemaNode.getEnumValues() != null;
+    return schemaNode.getDiscoveryEnum() != null;
   }
 
   /**
    * Returns the default value.
    */
   public String getDefault() {
-    return schemaNode.getDefault();
+    return schemaNode.getDiscoveryDefault();
   }
 
   /**

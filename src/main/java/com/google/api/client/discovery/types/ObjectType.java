@@ -16,7 +16,7 @@
 
 package com.google.api.client.discovery.types;
 
-import com.google.api.client.discovery.wireformat.DiscoveryDocument.Schema;
+import com.google.api.services.discovery.model.Jsonschema;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
@@ -39,7 +39,7 @@ public class ObjectType extends DiscoveryType {
    * they will contain.
    */
   public Map<String, DiscoveryType> getProperties() {
-    Map<String, Schema> props = schemaNode.getProperties();
+    Map<String, Jsonschema> props = schemaNode.getProperties();
     return props == null ? null : Maps.transformValues(props, schemaToDisicoveryType);
   }
 

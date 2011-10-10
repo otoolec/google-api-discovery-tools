@@ -17,12 +17,13 @@
 package com.google.api.client.discovery;
 
 import com.google.api.client.discovery.types.DiscoveryType;
-import com.google.api.client.discovery.wireformat.DiscoveryDocument;
-import com.google.api.client.discovery.wireformat.DiscoveryDocument.Schema;
+import com.google.api.services.discovery.model.Jsonschema;
+import com.google.api.services.discovery.model.Restmethod;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import java.util.Collection;
@@ -35,24 +36,62 @@ import java.util.Set;
  *
  * @author moshenko@google.com (Jacob Moshenko)
  */
-public class Method {
-
+public class RestMethod {
   /**
-   * Class which describes a single named parameter to a {@link Method}.
+   * Enum which defines the possible locations for a parameter.
+   */
+  public enum ParameterLocation {
+    /**
+     * Parameter should appear in the request path.
+     */
+    PATH("path"),
+
+    /**
+     * Parameter should appear as a named query parameter.
+     */
+    QUERY("query");
+
+    private static final Map<String, ParameterLocation> jsonValueToEnum = Maps.newHashMap();
+
+    static {
+      for (ParameterLocation type : values()) {
+        jsonValueToEnum.put(type.getJsonFormat(), type);
+      }
+    }
+
+    /**
+     * Returns the enumerated type based on the JSON type string.
+     */
+    public static ParameterLocation getEnumForJsonValue(String jsonValue) {
+      return jsonValueToEnum.get(jsonValue);
+    }
+
+    private String jsonValue;
+
+    private ParameterLocation(String jsonValue) {
+      this.jsonValue = jsonValue;
+    }
+
+    private String getJsonFormat() {
+      return jsonValue;
+    }
+  }
+  /**
+   * Class which describes a single named parameter to a {@link RestMethod}.
    */
   public class Parameter {
     private final String name;
-    private final DiscoveryType type;
+    private final Jsonschema schemaNode;
 
     /**
      * Create an instance in the context of the calling method.
      *
      * @param name Name of this parameter.
-     * @param type Type description of this parameter.
+     * @param schemaNode Schema node for additional information for this parameter.
      */
-    Parameter(String name, DiscoveryType type) {
+    Parameter(String name, Jsonschema schemaNode) {
       this.name = Preconditions.checkNotNull(name);
-      this.type = Preconditions.checkNotNull(type);
+      this.schemaNode = Preconditions.checkNotNull(schemaNode);
     }
 
     /**
@@ -66,21 +105,35 @@ public class Method {
      * Returns the type description of this parameter.
      */
     public DiscoveryType getType() {
-      return type;
+      return DiscoveryType.createTypeFromSchemaNode(schemaNode, topLevelSchemas);
+    }
+
+    /**
+     * Returns whether this parameter may appear multiple times.
+     */
+    public Boolean isRepeated() {
+      return schemaNode.getRepeated();
+    }
+
+    /**
+     * Returns whether this parameter goes in the query or the path for REST requests.
+     */
+    public ParameterLocation getLocation() {
+      return ParameterLocation.getEnumForJsonValue(schemaNode.getLocation());
     }
   }
 
-  private final Map<String, Schema> topLevelSchemas;
-  private final DiscoveryDocument.Method methodNode;
+  private final Map<String, Jsonschema> topLevelSchemas;
+  private final Restmethod methodNode;
 
   /**
    * Create an instance.
    *
    * @param topLevelSchemas Map of the named top level schemas.
-   * @param methodNode {@link DiscoveryDocument.Method} node which this method
+   * @param methodNode {@link Restmethod} node which this method
    *        wraps.
    */
-  public Method(Map<String, Schema> topLevelSchemas, DiscoveryDocument.Method methodNode) {
+  RestMethod(Map<String, Jsonschema> topLevelSchemas, Restmethod methodNode) {
     this.topLevelSchemas = Preconditions.checkNotNull(topLevelSchemas);
     this.methodNode = Preconditions.checkNotNull(methodNode);
   }
@@ -90,6 +143,11 @@ public class Method {
    */
   public String getDescription() {
     return methodNode.getDescription();
+  }
+
+  /** HTTP method used by this method. */
+  public String getHttpMethod() {
+    return methodNode.getHttpMethod();
   }
 
   /**
@@ -120,10 +178,29 @@ public class Method {
   }
 
   /**
+   * The URI path of this REST method. Should be used in conjunction with the
+   * basePath property at the api-level.
+   */
+  public String getPath() {
+    return methodNode.getPath();
+  }
+
+  /**
+   * Returns the description of what type this method accepts.
+   */
+  public DiscoveryType getRequest() {
+    // TODO(moshenko) remove this when response types are Jsonschema
+    Jsonschema requestType = topLevelSchemas.get(methodNode.getRequest().get$ref());
+    return DiscoveryType.createTypeFromSchemaNode(requestType, topLevelSchemas);
+  }
+
+  /**
    * Returns the description of what type this method returns.
    */
-  public DiscoveryType getReturnType() {
-    return DiscoveryType.createTypeFromSchemaNode(methodNode.getReturns(), topLevelSchemas);
+  public DiscoveryType getResponse() {
+    // TODO(moshenko) remove this when response types are Jsonschema
+    Jsonschema responseType = topLevelSchemas.get(methodNode.getResponse().get$ref());
+    return DiscoveryType.createTypeFromSchemaNode(responseType, topLevelSchemas);
   }
 
   /**
@@ -136,9 +213,7 @@ public class Method {
   private List<Parameter> createParameterList(List<String> paramNamesInOrder) {
     return Lists.transform(paramNamesInOrder, new Function<String, Parameter>() {
       public Parameter apply(String name) {
-        DiscoveryType type = DiscoveryType.createTypeFromSchemaNode(
-            methodNode.getParameters().get(name), topLevelSchemas);
-        return new Parameter(name, type);
+        return new Parameter(name, methodNode.getParameters().get(name));
       }
     });
   }
@@ -150,8 +225,8 @@ public class Method {
 
   @Override
   public boolean equals(Object rhs) {
-    if (rhs instanceof Method) {
-      Method rhsTyped = (Method) rhs;
+    if (rhs instanceof RestMethod) {
+      RestMethod rhsTyped = (RestMethod) rhs;
       return Objects.equal(methodNode, rhsTyped.methodNode)
           && Objects.equal(topLevelSchemas, rhsTyped.topLevelSchemas);
     } else {

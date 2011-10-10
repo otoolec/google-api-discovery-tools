@@ -16,39 +16,32 @@
 
 package com.google.api.client.discovery;
 
-import com.google.api.client.discovery.Method.Parameter;
+import com.google.api.client.discovery.RestMethod.Parameter;
 import com.google.api.client.discovery.types.DiscoveryType;
 import com.google.api.client.discovery.types.StringType;
-import com.google.api.client.discovery.wireformat.DiscoveryDocument;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Tests for the {@link Discovery} class.
+ * Tests for the {@link RestDiscovery} class.
  *
  * @author moshenko@google.com (Jake Moshenko)
  */
 public class DiscoveryTest extends TestCase {
 
-  private DiscoveryDocument doc;
-  private Discovery discovery;
+  private RestDiscovery discovery;
 
   @Override
   public void setUp() throws Exception {
-    doc =
-        new Gson().fromJson(new InputStreamReader(
-            new FileInputStream("src/test/resources/urlshortener-v1-rpc.json")),
-            DiscoveryDocument.class);
-    discovery = new Discovery(doc);
+    discovery =
+        RestHelper.getDiscoveryFromFile(new File("src/test/resources/urlshortener-v1-rest.json"));
   }
 
   public void testBasic() {
@@ -57,17 +50,22 @@ public class DiscoveryTest extends TestCase {
     assertEquals("v1", discovery.getVersion());
     assertEquals(2, discovery.getIcons().size());
     assertTrue(discovery.getDocumentationLink().length() > 0);
-    assertEquals("/rpc", discovery.getRpcPath());
+    assertEquals("/urlshortener/v1/", discovery.getBasePath());
     assertEquals(ImmutableList.of("labs"), discovery.getLabels());
   }
 
   public void testMethods() {
-    assertEquals(3, discovery.getMethods().size());
-    assertTrue(discovery.getMethods().containsKey("urlshortener.url.get"));
-    assertTrue(discovery.getMethods().containsKey("urlshortener.url.insert"));
-    assertTrue(discovery.getMethods().containsKey("urlshortener.url.list"));
+    assertEquals(1, discovery.getResources().size());
+    assertTrue(discovery.getResources().containsKey("url"));
 
-    Method getMethod = discovery.getMethods().get("urlshortener.url.get");
+    RestResource urlResource = discovery.getResources().get("url");
+
+    assertEquals(3, urlResource.getMethods().size());
+    assertTrue(urlResource.getMethods().containsKey("get"));
+    assertTrue(urlResource.getMethods().containsKey("insert"));
+    assertTrue(urlResource.getMethods().containsKey("list"));
+
+    RestMethod getMethod = urlResource.getMethods().get("get");
     assertEquals("urlshortener.url.get", getMethod.getId());
     assertTrue(getMethod.getDescription().length() > 0);
 
@@ -76,6 +74,7 @@ public class DiscoveryTest extends TestCase {
     assertEquals("shortUrl", getParams.get(0).getName());
     assertTrue(getParams.get(0).getType().getRequired());
     assertEquals(DiscoveryType.BaseType.STRING, getParams.get(0).getType().getBaseType());
+    assertEquals(RestMethod.ParameterLocation.QUERY, getParams.get(0).getLocation());
 
     Collection<Parameter> optionalGetParams = getMethod.getOptionalParameters();
     assertEquals(1, optionalGetParams.size());
@@ -83,6 +82,7 @@ public class DiscoveryTest extends TestCase {
     Parameter projection = optionalGetParams.iterator().next();
     assertEquals("projection", projection.getName());
     assertEquals(DiscoveryType.BaseType.STRING, projection.getType().getBaseType());
+    assertEquals(RestMethod.ParameterLocation.QUERY, projection.getLocation());
 
     StringType projType = projection.getType().getString();
     assertTrue(projType.isEnum());
@@ -90,7 +90,7 @@ public class DiscoveryTest extends TestCase {
     assertEquals(3, projType.getEnumDescriptions().size());
     assertTrue(projType.getEnumValues().contains("ANALYTICS_CLICKS"));
 
-    DiscoveryType urlType = getMethod.getReturnType();
+    DiscoveryType urlType = getMethod.getResponse();
     assertEquals(DiscoveryType.BaseType.OBJECT, urlType.getBaseType());
     assertEquals("Url", urlType.getId());
 
@@ -112,15 +112,21 @@ public class DiscoveryTest extends TestCase {
     assertEquals("https://www.googleapis.com/auth/urlshortener",
         auth.entrySet().iterator().next().getValue().getScopeName());
 
-    List<String> scopes = discovery.getMethods().get("urlshortener.url.insert").getScopes();
+    List<String> scopes =
+        discovery.getResources().get("url").getMethods().get("insert").getScopes();
     assertEquals(1, scopes.size());
     assertEquals("https://www.googleapis.com/auth/urlshortener", scopes.get(0));
   }
 
   public void testCommonParameters() {
     Map<String, DiscoveryType> commonParameters = discovery.getParameters();
-    assertEquals(Sets.newHashSet("alt", "fields", "key", "oauth_token", "prettyPrint", "userIp"),
-        commonParameters.keySet());
+    assertEquals(Sets.newHashSet("alt",
+        "fields",
+        "key",
+        "oauth_token",
+        "prettyPrint",
+        "quotaUser",
+        "userIp"), commonParameters.keySet());
     assertEquals(DiscoveryType.BaseType.BOOLEAN, commonParameters.get("prettyPrint").getBaseType());
   }
 

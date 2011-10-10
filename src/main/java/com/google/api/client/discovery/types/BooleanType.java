@@ -32,7 +32,7 @@ public class BooleanType extends DiscoveryType {
    * Returns the default if one was specified or {@code null} if none was specified.
    */
   public Boolean getDefault() {
-    String def = schemaNode.getDefault();
-    return def == null ? null : Boolean.parseBoolean(schemaNode.getDefault());
+    String def = schemaNode.getDiscoveryDefault();
+    return def == null ? null : Boolean.parseBoolean(schemaNode.getDiscoveryDefault());
   }
 }

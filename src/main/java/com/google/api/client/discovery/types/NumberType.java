@@ -94,7 +94,7 @@ public class NumberType extends DiscoveryType {
    * Returns the default value or {@code null} if none was specified.
    */
   public Double getDefault() {
-    String def = schemaNode.getDefault();
+    String def = schemaNode.getDiscoveryDefault();
     return def == null ? null : Double.parseDouble(def);
   }
 

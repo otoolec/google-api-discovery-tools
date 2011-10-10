@@ -16,16 +16,14 @@
 
 package com.google.api.client.discovery.types;
 
-import com.google.api.client.discovery.Discovery;
-import com.google.api.client.discovery.wireformat.DiscoveryDocument;
+import com.google.api.client.discovery.RestDiscovery;
+import com.google.api.client.discovery.RestHelper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -39,11 +37,8 @@ public class AllTypesTest extends TestCase {
 
   @Override
   public void setUp() throws Exception {
-    DiscoveryDocument doc =
-      new Gson().fromJson(new InputStreamReader(
-          new FileInputStream("src/test/resources/all-types.json")),
-          DiscoveryDocument.class);
-    Discovery discovery = new Discovery(doc);
+    RestDiscovery discovery =
+        RestHelper.getDiscoveryFromFile(new File("src/test/resources/all-types.json"));
     allTypes =
         discovery.getSchemas().entrySet().iterator().next().getValue().getObject().getProperties();
   }
